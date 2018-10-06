@@ -1,6 +1,6 @@
 {
     "name": "xing.chen/yii-import-excel",
-    "description": "yii导入excel表格的扩展程序，程序对常用导入套路进行了封闭，大大简化了编写代码的工作。",
+    "description": "yii导入excel表格的扩展程序，程序对常用导入套路进行了封装，可大大简化编写代码的工作量。",
     "type": "yii2-extension",
     "keywords": ["yii2","import excel", "yii", "导入excel"],
     "license": "MIT",

@@ -1,5 +1,5 @@
 # yii-improt-excel
-yii导入excel表格的扩展程序
+yii导入excel表格的扩展程序，程序对常用导入套路进行了封装，可大大简化编写代码的工作量。
 
 ### 安装
 ```php
