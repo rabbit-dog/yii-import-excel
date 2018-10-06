@@ -17,24 +17,38 @@ $rowsSet = [
     'C' => 'birthday',
 ];
 
+$start = 1; // 从第几行开始处理
+
+$type = 'update';
+
+ImportExcel::init($file, $rowsSet, $start)
+    ->run(function($data) use ($type) {
+
+        // 保存数据的代码
+        $m = new Member();
+        $m->load($data, '');
+        $m->type = $type;
+        $m->save();
+    });
+```
+
+### 进阶使用
+```php
+<?php
+
 // 选项键值设置，比如性别表格中为女，下面设置0 => '女'，那么保存到数据库的值不是女，而是0（取键名）
 $valueMap = ['sex' => [0 => '女', 1 => '男']];
 
 // 键值默认设置，对应上面的选项值设置，没有默认值表示为必填，如果没有设置的话，将会抛出错误
 $valueMapDefault = ['sex' => -1,];
 
-$type = 'update';
 
-ImportExcel::init($file, $rowsSet, 1)
+ImportExcel::init($file, $rowsSet, $start)
     ->valueMap($valueMap) // 选项键值设置
     ->valueMapDefault($valueMapDefault) // 键值默认设置
     ->formatFields(['birthday' => 'date']) // 格式设置，如日期需要设置，否则读取到值 会有问题
     ->run(function($data) use ($type) {
-
-        $m = new Member();
-        $m->load($data, '');
-        $m->type = $type;
-        $m->save();
+        // 保存数据的代码
     });
 ```
 
