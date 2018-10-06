@@ -10,6 +10,9 @@ composer require xing.chen/yii-import-excel dev-master
 ```php
 <?php
 
+$file = $_FILES['file']['tmp_name'] ?? '';
+if (empty($file)) exit('请上传文件');
+            
 // 表格序列对应的字段名
 $rowsSet = [
     'A' => 'name',
