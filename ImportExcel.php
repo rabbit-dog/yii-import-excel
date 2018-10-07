@@ -137,15 +137,11 @@ class ImportExcel
                     $value = $cell->getValue();
 
                     // 如果是选项
-                    if (isset($valueMap[$fieldName])) {
-                        // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
-                        if (empty($value) && isset($valueMapDefault[$fieldName])) {
-                            $value = $valueMapDefault[$fieldName];
-                        } else if (!empty($value)) {
-                            $value = array_keys($valueMap[$fieldName], $value)[0] ?? null;
-                            if (is_null($value) && !isset($valueMapDefault[$fieldName]))
-                                throw new \Exception("第{$k}行{$col}列格式错误，值为：{$value}。", 10000);
-                        }
+                    // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
+                    if (isset($valueMap[$fieldName]) && !empty($value)) {
+                        $value = array_keys($valueMap[$fieldName], $value)[0] ?? null;
+                        if (is_null($value) && !isset($valueMapDefault[$fieldName]))
+                            throw new \Exception("第{$k}行{$col}列格式错误，值为：{$value}。", 10000);
                     }
                 }
             }
@@ -164,9 +160,12 @@ class ImportExcel
                     if (empty($fieldName)) continue;
                     $value = $cell->getValue();
 
-                    // 读取相应相应键值配置
-                    if (isset($valueMap[$fieldName]))
-                        $value = array_keys($valueMap[$fieldName], $value)[0] ?? $valueMapDefault[$fieldName];
+                    // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
+                    if (empty($value) && isset($valueMapDefault[$fieldName])) {
+                        $value = $valueMapDefault[$fieldName];
+                    } else if (!empty($value) && isset($valueMap[$fieldName])) {
+                        $value = array_keys($valueMap[$fieldName], $value)[0] ?? '';
+                    }
 
                     // 格式处理
                     $value = $this->format($fieldName, $value);
