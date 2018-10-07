@@ -155,6 +155,7 @@ class ImportExcel
 
                 // 循环赋值表格一行的数据
                 $data = [];
+                $nullNumber = 0;
                 foreach ($cellIterator as $col => $cell) {
                     $fieldName = $rowsSet[$col] ?? null;
                     if (empty($fieldName)) continue;
@@ -171,7 +172,12 @@ class ImportExcel
                     $value = $this->format($fieldName, $value);
 
                     $data[$fieldName] = (string) $value;
+                    // 空值统计
+                    if (empty($value)) $nullNumber ++;
                 }
+
+                // 如果空值大于所有的列
+                if ($nullNumber >= count($this->rowsSet)) continue;
 
                 // 执行保存程序
                 $saveFunction($data);
