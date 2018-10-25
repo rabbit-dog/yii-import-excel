@@ -189,7 +189,7 @@ class ImportExcel
         } catch (\Exception $e) {
             $transaction->rollBack();
 //            throw $e;
-            exit('<h3>操作失败，本次操作全部取消，请修正后重新上传</h3><p>错误信息：'.$e->getMessage().'</p>');
+            throw new \Exception('<h3>操作失败，本次操作全部取消，请修正后重新上传</h3><p>错误信息：'.$e->getMessage().'</p>');
         }
     }
 
