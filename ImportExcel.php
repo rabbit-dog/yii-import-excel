@@ -185,7 +185,7 @@ class ImportExcel
             }
 
             $transaction->commit();
-            exit ('<i class="fa  fa-check-circle"></i> 操作成功，一共处理了' . $nnn . '条数据');
+            return $nnn;
         } catch (\Exception $e) {
             $transaction->rollBack();
 //            throw $e;
