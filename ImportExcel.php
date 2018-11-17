@@ -51,6 +51,9 @@ class ImportExcel
 
     protected $formatFields = [];
 
+    // 当前行
+    public static $currentRow = 0;
+
 
     /**
      * 初始化
@@ -147,6 +150,7 @@ class ImportExcel
             }
 
             foreach ($worksheet->getRowIterator() as $k => $row) {
+                static::$currentRow = $k;
                 // 跳过
                 if ($k <= $this->startRow) continue;
 
@@ -164,7 +168,7 @@ class ImportExcel
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
                     if (empty($value) && isset($valueMapDefault[$fieldName])) {
                         $value = $valueMapDefault[$fieldName];
-                    } else if (!empty($value) && isset($valueMap[$fieldName])) {
+                    } else if (!empty($value) && isset($valueMap[$fieldName]) && is_array($valueMap[$fieldName])) {
                         $value = array_keys($valueMap[$fieldName], $value)[0] ?? '';
                     }
 
@@ -176,7 +180,7 @@ class ImportExcel
                     if (empty($value)) $nullNumber ++;
                 }
 
-                // 如果空值大于所有的列
+                // 如果空值大于等于所有的列
                 if ($nullNumber >= count($this->rowsSet)) continue;
 
                 // 执行保存程序
