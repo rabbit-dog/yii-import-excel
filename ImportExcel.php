@@ -53,6 +53,7 @@ class ImportExcel
 
     // 当前行
     public static $currentRow = 0;
+    public static $currentCol = 0;
 
 
     /**
@@ -126,6 +127,7 @@ class ImportExcel
         try {
             // 检查数据（考虑内存，不另存数据）
             foreach ($worksheet->getRowIterator() as $k => $row) {
+                static::$currentRow = $row->getRowIndex();
                 // 跳过
                 if ($k <= $this->startRow) continue;
 
@@ -134,23 +136,27 @@ class ImportExcel
                 // 检查当前一行
                 foreach ($cellIterator as $col => $cell) {
 
+                    static::$currentCol = $cell->getColumn();
                     $fieldName = $rowsSet[$col] ?? null;
                     if (empty($fieldName)) continue;
 
-                    $value = $cell->getValue();
+                    $value = $cell->getCalculatedValue() ?: $cell->getValue();
+                    // 获取公式值
+//                    if (substr($value, 0, 1) == '=') $value = $cell->getCalculatedValue();
 
                     // 如果是选项
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
-                    if (isset($valueMap[$fieldName]) && !empty($value)) {
+                    if (isset($valueMap[$fieldName]) && empty($value)) {
                         $value = array_keys($valueMap[$fieldName], $value)[0] ?? null;
-                        if (is_null($value) && !isset($valueMapDefault[$fieldName]))
-                            throw new \Exception("第{$k}行{$col}列格式错误，值为：{$value}。", 10000);
+                        if (is_null($value) && !isset($valueMapDefault[$fieldName])) {
+                            throw new \Exception("第{$k}行{$col}列格式错误，值不能为空。", 10000);
+                        }
                     }
                 }
             }
 
             foreach ($worksheet->getRowIterator() as $k => $row) {
-                static::$currentRow = $k;
+                static::$currentRow = $row->getRowIndex();
                 // 跳过
                 if ($k <= $this->startRow) continue;
 
@@ -161,9 +167,10 @@ class ImportExcel
                 $data = [];
                 $nullNumber = 0;
                 foreach ($cellIterator as $col => $cell) {
+                    static::$currentCol = $cell->getColumn();
                     $fieldName = $rowsSet[$col] ?? null;
                     if (empty($fieldName)) continue;
-                    $value = $cell->getValue();
+                    $value = $cell->getCalculatedValue() ?: $cell->getValue();
 
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
                     if (empty($value) && isset($valueMapDefault[$fieldName])) {
@@ -172,6 +179,8 @@ class ImportExcel
                         $value = array_keys($valueMap[$fieldName], $value)[0] ?? '';
                     }
 
+                    // 获取公式值
+                    if (substr($value, 0, 1) == '=') $value = $cell->getCalculatedValue();
                     // 格式处理
                     $value = $this->format($fieldName, $value);
 
@@ -193,7 +202,9 @@ class ImportExcel
         } catch (\Exception $e) {
             $transaction->rollBack();
 //            throw $e;
-            throw new \Exception('<h3>操作失败，本次操作全部取消，请修正后重新上传</h3><p>错误信息：'.$e->getMessage().'</p>');
+            throw new \Exception('<h3>操作失败，本次操作全部取消，请修正后重新上传</h3>
+<p>错误信息：'.$e->getMessage().'</p>
+<p>表格处理至第 '. static::$currentRow .' 行 ' . static::$currentCol . ' 列</p>');
         }
     }
 
