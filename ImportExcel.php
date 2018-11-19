@@ -141,8 +141,6 @@ class ImportExcel
                     if (empty($fieldName)) continue;
 
                     $value = $cell->getCalculatedValue() ?: $cell->getValue();
-                    // 获取公式值
-//                    if (substr($value, 0, 1) == '=') $value = $cell->getCalculatedValue();
 
                     // 如果是选项
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
@@ -179,8 +177,6 @@ class ImportExcel
                         $value = array_keys($valueMap[$fieldName], $value)[0] ?? '';
                     }
 
-                    // 获取公式值
-                    if (substr($value, 0, 1) == '=') $value = $cell->getCalculatedValue();
                     // 格式处理
                     $value = $this->format($fieldName, $value);
 
