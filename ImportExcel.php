@@ -129,7 +129,7 @@ class ImportExcel
             foreach ($worksheet->getRowIterator() as $k => $row) {
                 static::$currentRow = $row->getRowIndex();
                 // 跳过
-                if ($k <= $this->startRow) continue;
+                if ($this->startRow > $k ) continue;
 
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE);
@@ -155,8 +155,9 @@ class ImportExcel
 
             foreach ($worksheet->getRowIterator() as $k => $row) {
                 static::$currentRow = $row->getRowIndex();
+
                 // 跳过
-                if ($k <= $this->startRow) continue;
+                if ($this->startRow > $k ) continue;
 
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE);
