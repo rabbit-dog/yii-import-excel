@@ -48,6 +48,9 @@ ImportExcel::init($file, $rowsSet, $start)
     // 默认值设置：如果设置了valueMap，对应值为空或错误，就会抛出错误。比如$valueMap['sex'] => [ 0 => '女', 1 => '男']，如果值不是男|女，就会抛出错误，但是设置了这个，则会自动变成默认值，不会抛出错误
     ->valueMapDefault($valueMapDefault) 
     ->formatFields(['birthday' => 'date']) // 格式设置，如日期需要设置，否则读取到值 会有问题
+    ->setTransactionRollBack(function($e) {
+        exit('出错了，错误消息:' . $e->getMessage());
+    }) // 出错后，yii不仅会自动圆滚，并且可以执行这里的程序
     ->run(function($data) use ($type) {
         // 保存数据的代码
     });

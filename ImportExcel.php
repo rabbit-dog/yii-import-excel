@@ -36,6 +36,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
  * @property array $valueMap 选项值配置
  * @property array $valueMapDefault 选项值不存在时的默认值
  * @property array $formatFields 格式设置，如日期需要设置，否则读取到值 会有问题
+ * @property function $transactionRollBack 是否开启事务回滚
  * @package xing\helper\yii\xml
  */
 class ImportExcel
@@ -54,6 +55,8 @@ class ImportExcel
     // 当前行
     public static $currentRow = 0;
     public static $currentCol = 0;
+
+    protected $transactionRollBack;
 
 
     /**
@@ -87,6 +90,12 @@ class ImportExcel
     public function formatFields($formatFields)
     {
         $this->formatFields = $formatFields;
+        return $this;
+    }
+
+    public function setTransactionRollBack($transactionRollBack)
+    {
+        $this->transactionRollBack = $transactionRollBack;
         return $this;
     }
 
@@ -125,6 +134,7 @@ class ImportExcel
         $transaction = Yii::$app->db->beginTransaction();
         $nnn = 0;
         try {
+            throw new \Exception('test');
             // 检查数据（考虑内存，不另存数据）
             foreach ($worksheet->getRowIterator() as $k => $row) {
                 static::$currentRow = $row->getRowIndex();
@@ -198,6 +208,7 @@ class ImportExcel
             return $nnn;
         } catch (\Exception $e) {
             $transaction->rollBack();
+            if (!empty($this->transactionRollBack)) ($this->transactionRollBack)($e);
 //            throw $e;
             throw new \Exception('<h3>操作失败，本次操作全部取消，请修正后重新上传</h3>
 <p>错误信息：'.$e->getMessage().'</p>
