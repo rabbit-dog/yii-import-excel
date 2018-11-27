@@ -134,7 +134,6 @@ class ImportExcel
         $transaction = Yii::$app->db->beginTransaction();
         $nnn = 0;
         try {
-            throw new \Exception('test');
             // 检查数据（考虑内存，不另存数据）
             foreach ($worksheet->getRowIterator() as $k => $row) {
                 static::$currentRow = $row->getRowIndex();
