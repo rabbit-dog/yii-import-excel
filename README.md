@@ -44,16 +44,24 @@ $valueMapDefault = ['sex' => -1,];
 
 
 ImportExcel::init($file, $rowsSet, $start)
-    ->valueMap($valueMap) // 
-    // 默认值设置：如果设置了valueMap，对应值为空或错误，就会抛出错误。比如$valueMap['sex'] => [ 0 => '女', 1 => '男']，如果值不是男|女，就会抛出错误，但是设置了这个，则会自动变成默认值，不会抛出错误
+    ->valueMap($valueMap)// 值映射设置：如[ 0 => '女', 1 => '男']，表格值为男时，实际值将被转换为1，为女时，转为0。以上都不是时，如果没有默认值设置，则抛出错误
+    
+    ->valueMapDefault($valueMapDefault) // 字段默认值设置（值为空时）
+    
     ->setUnique(['name', 'type']) // 要检查重复的字段数组
-    ->valueMapDefault($valueMapDefault) 
-    ->formatFields(['birthday' => 'date']) // 格式设置，如日期需要设置，否则读取到值 会有问题
+    
+    ->formatFields(['birthday' => 'date']) // 格式设置，比如日期就需要设置，否则读取到值会有问题
+    
+    // 以下是事务回滚设置（YII）
     ->setTransactionRollBack(function($e) {
         exit('出错了，错误消息:' . $e->getMessage());
-    }) // 出错后，yii不仅会自动圆滚，并且可以执行这里的程序
-    ->run(function($data) use ($type) {
+    })
+    ->run(function($data) {
         // 保存数据的代码
+        
+        $m = new User();
+        $m->load($data, '');
+        $m->save();
     });
 ```
 
