@@ -37,6 +37,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
  * @property array $valueMapDefault 选项值不存在时的默认值
  * @property array $formatFields 格式设置，如日期需要设置，否则读取到值 会有问题
  * @property function $transactionRollBack 是否开启事务回滚
+ * @property array $uniqueFields 唯一字段，需要检查表格中是否存在重复
  * @package xing\helper\yii\xml
  */
 class ImportExcel
@@ -57,6 +58,10 @@ class ImportExcel
     public static $currentCol = 0;
 
     protected $transactionRollBack;
+
+    protected $uniqueFields = [];
+
+    private $checkUniqueText = [];
 
 
     /**
@@ -96,6 +101,12 @@ class ImportExcel
     public function setTransactionRollBack($transactionRollBack)
     {
         $this->transactionRollBack = $transactionRollBack;
+        return $this;
+    }
+
+    public function setUnique($fields)
+    {
+        $this->uniqueFields = $fields;
         return $this;
     }
 
@@ -158,6 +169,15 @@ class ImportExcel
                         if (is_null($value) && !isset($valueMapDefault[$fieldName])) {
                             throw new \Exception("第{$k}行{$col}列格式错误，值不能为空。", 10000);
                         }
+                    }
+                    // 重复检查
+                    if (!empty($this->uniqueFields) && in_array($fieldName, $this->uniqueFields)) {
+                        if (!isset($this->checkUniqueText[$fieldName])) $this->checkUniqueText[$fieldName] = '|';
+                        if (stripos($this->checkUniqueText[$fieldName], '|' . $value . '|') !== false) {
+                            er($this->checkUniqueText);
+                            throw new \Exception("第{$k}行{$col}的值重复");
+                        }
+                        $this->checkUniqueText[$fieldName] .= $value . '|';
                     }
                 }
             }

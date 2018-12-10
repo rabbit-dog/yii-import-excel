@@ -46,6 +46,7 @@ $valueMapDefault = ['sex' => -1,];
 ImportExcel::init($file, $rowsSet, $start)
     ->valueMap($valueMap) // 
     // 默认值设置：如果设置了valueMap，对应值为空或错误，就会抛出错误。比如$valueMap['sex'] => [ 0 => '女', 1 => '男']，如果值不是男|女，就会抛出错误，但是设置了这个，则会自动变成默认值，不会抛出错误
+    ->setUnique(['name', 'type']) // 要检查重复的字段数组
     ->valueMapDefault($valueMapDefault) 
     ->formatFields(['birthday' => 'date']) // 格式设置，如日期需要设置，否则读取到值 会有问题
     ->setTransactionRollBack(function($e) {
