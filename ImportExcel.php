@@ -163,18 +163,14 @@ class ImportExcel
                     $value = $cell->getCalculatedValue() ?: $cell->getValue();
 
                     // 如果是选项
-                    // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
-                    if (isset($valueMap[$fieldName]) && empty($value)) {
-                        $value = array_keys($valueMap[$fieldName], $value)[0] ?? null;
-                        if (is_null($value) && !isset($valueMapDefault[$fieldName])) {
-                            throw new \Exception("第{$k}行{$col}列格式错误，值不能为空。", 10000);
-                        }
+                    // 如果值为空，并且没有默认值的设置
+                    if (empty($value) && !isset($valueMapDefault[$fieldName])) {
+                        throw new \Exception("第{$k}行{$col}列格式错误，值不能为空。", 10000);
                     }
                     // 重复检查
                     if (!empty($this->uniqueFields) && in_array($fieldName, $this->uniqueFields)) {
                         if (!isset($this->checkUniqueText[$fieldName])) $this->checkUniqueText[$fieldName] = '|';
                         if (stripos($this->checkUniqueText[$fieldName], '|' . $value . '|') !== false) {
-                            er($this->checkUniqueText);
                             throw new \Exception("第{$k}行{$col}的值重复");
                         }
                         $this->checkUniqueText[$fieldName] .= $value . '|';
