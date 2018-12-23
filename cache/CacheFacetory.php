@@ -14,10 +14,12 @@ class CacheFacetory
 
 
     /**
+     * @param null $cacheDrive
      * @return YiiCacheRSR16
      */
-    public static function getInstance()
+    public static function getInstance($cacheDrive = null)
     {
+        YiiCacheRSR16::$cacheDrive = $cacheDrive;
         return new YiiCacheRSR16;
     }
 }

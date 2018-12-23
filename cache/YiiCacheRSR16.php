@@ -12,12 +12,27 @@ use Yii;
 
 class YiiCacheRSR16 implements \Psr\SimpleCache\CacheInterface
 {
+    public static $cacheDrive = '';
+    private static $instance;
     /**
      * @return \yii\caching\CacheInterface
      */
     public static function getInstance()
     {
-        return Yii::$app->cache;
+        if (empty(static::$instance)) {
+
+            if (empty(static::$cacheDrive)) {
+                static::$instance = Yii::$app->cache;
+            } else {
+                $className = '\yii\caching\\' . static::$cacheDrive;
+                $calss = new $className();
+                $calss->init();
+                static::$instance = new $calss;
+            }
+
+        }
+
+        return static::$instance;
     }
 
     public function get($key, $default = null)

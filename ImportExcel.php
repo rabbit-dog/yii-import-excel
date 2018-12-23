@@ -120,9 +120,6 @@ class ImportExcel
      */
     public function run(callable $saveFunction)
     {
-        // 设置缓存
-        $cache = CacheFacetory::getInstance();
-        \PhpOffice\PhpSpreadsheet\Settings::setCache($cache);
 
         set_time_limit(0);
         $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
@@ -131,6 +128,10 @@ class ImportExcel
         } else {
             $reader = new Xlsx();
         }
+
+        // 设置缓存
+        $cache = CacheFacetory::getInstance('FileCache');
+        \PhpOffice\PhpSpreadsheet\Settings::setCache($cache);
 
         $reader->setReadDataOnly(true);
         $spreadsheet = $reader->load($this->file);
@@ -182,6 +183,10 @@ class ImportExcel
                     }
                 }
             }
+
+            // 删除变量，释放内存
+            unset($this->checkUniqueText);
+            $this->checkUniqueText = null;
 
             foreach ($worksheet->getRowIterator() as $k => $row) {
                 static::$currentRow = $row->getRowIndex();
