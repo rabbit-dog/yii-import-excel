@@ -196,15 +196,15 @@ class ImportExcel
                     if (empty($fieldName)) continue;
                     $value = $cell->getCalculatedValue() ?: $cell->getValue();
 
+
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
                     if (empty($value) && isset($valueMapDefault[$fieldName])) {
                         $value = $valueMapDefault[$fieldName];
                     } else if (!empty($value) && isset($valueMap[$fieldName]) && is_array($valueMap[$fieldName])) {
                         $value = array_keys($valueMap[$fieldName], $value)[0] ?? '';
                     }
-
                     // 格式处理
-                    $value = $this->format($fieldName, $value);
+                    if (isset($this->formatFields[$fieldName])) $value = $this->format($fieldName, $value);
 
                     $data[$fieldName] = (string) $value;
                     // 空值统计
@@ -240,13 +240,16 @@ class ImportExcel
     protected function format(string $fieldName, $value)
     {
         $format = $this->formatFields[$fieldName] ?? null;
+        hr($fieldName);
+        hr($value);
+        er(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value));
             // 格式处理
         switch ($format) {
             case 'date':
-                $value = $value ? date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($value)) : '1000-01-01';
+                $value = $value ? date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value)) : '1000-01-01';
                 break;
             case 'date:int':
-                $value = $value ? strtotime(date('Y-m-d', \PHPExcel_Shared_Date::ExcelToPHP($value))) : 0;
+                $value = $value ? strtotime(date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value))) : 0;
                 break;
         }
         return $value;
