@@ -240,9 +240,6 @@ class ImportExcel
     protected function format(string $fieldName, $value)
     {
         $format = $this->formatFields[$fieldName] ?? null;
-        hr($fieldName);
-        hr($value);
-        er(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value));
             // 格式处理
         switch ($format) {
             case 'date':
