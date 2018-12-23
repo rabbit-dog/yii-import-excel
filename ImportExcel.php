@@ -24,6 +24,8 @@ if (!$m->save()) throw new ModelException($m);
 
 namespace xing\yiiImportExcel;
 
+use xing\helper\yii\YiiCacheRSR16;
+use xing\yiiImportExcel\cache\CacheFacetory;
 use Yii;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -118,6 +120,9 @@ class ImportExcel
      */
     public function run(callable $saveFunction)
     {
+        // 设置缓存
+        $cache = CacheFacetory::getInstance();
+        \PhpOffice\PhpSpreadsheet\Settings::setCache($cache);
 
         set_time_limit(0);
         $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
