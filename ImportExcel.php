@@ -246,7 +246,7 @@ class ImportExcel
                 $value = $value ? date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value)) : '1000-01-01';
                 break;
             case 'date:int':
-                $value = $value ? strtotime(date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value))) : 0;
+                $value = $value ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value) : 0;
                 break;
         }
         return $value;
