@@ -14,6 +14,8 @@ yii导入excel表格的扩展程序，可处理大型表格，程序对常用导
 
 6、可设置空单元格时的默认值
 
+7、支持事务
+
 
 ### 安装
 ```php
@@ -66,6 +68,7 @@ ImportExcel::init($file, $rowsSet, $start)
     
     ->formatFields(['birthday' => 'date']) // 格式设置，比如日期就需要设置，否则读取到值会有问题
     
+    ->setTransaction(true) // 开启事务，默认不开启，注意如果导入数据量大时开启事务可能会造锁死
     // 以下是事务回滚设置（YII）
     ->setTransactionRollBack(function($e) {
         exit('出错了，错误消息:' . $e->getMessage());

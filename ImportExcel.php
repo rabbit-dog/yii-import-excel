@@ -40,6 +40,7 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
  * @property array $formatFields 格式设置，如日期需要设置，否则读取到值 会有问题
  * @property function $transactionRollBack 是否开启事务回滚
  * @property array $uniqueFields 唯一字段，需要检查表格中是否存在重复
+ * @property bool $transaction 是否开启事务
  * @package xing\helper\yii\xml
  */
 class ImportExcel
@@ -64,6 +65,7 @@ class ImportExcel
     protected $uniqueFields = [];
 
     private $checkUniqueText = [];
+    private $transaction = false;
 
 
     /**
@@ -112,6 +114,12 @@ class ImportExcel
         return $this;
     }
 
+    public function setTransaction($bool)
+    {
+        $this->transaction = $bool;
+        return $this;
+    }
+
     /**
      * 执行导入
      * @param callable $saveFunction 保存程序
@@ -148,7 +156,7 @@ class ImportExcel
         $valueMapDefault = $this->valueMapDefault;
 
 
-        $transaction = Yii::$app->db->beginTransaction();
+        if ($this->transaction) $transaction = Yii::$app->db->beginTransaction();
         $nnn = 0;
         try {
             // 检查数据（考虑内存，不另存数据）
@@ -229,11 +237,13 @@ class ImportExcel
                 ++ $nnn;
             }
 
-            $transaction->commit();
+            if ($this->transaction) $transaction->commit();
             return $nnn;
         } catch (\Exception $e) {
-            $transaction->rollBack();
-            if (!empty($this->transactionRollBack)) ($this->transactionRollBack)($e);
+            if ($this->transaction) {
+                $transaction->rollBack();
+                if (!empty($this->transactionRollBack)) ($this->transactionRollBack)($e);
+            }
 //            throw $e;
             throw new \Exception('<h3>操作失败，本次操作全部取消，请修正后重新上传</h3>
 <p>错误信息：'.$e->getMessage().'</p>
