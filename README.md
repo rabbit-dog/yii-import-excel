@@ -84,7 +84,7 @@ ImportExcel::init($file, $rowsSet, $start)
 
 #### 方法 run($saveFunction) 参数说明
 参数 $saveFunction 为匿名函数，用于执行保存的过程。
-上面例子的use ($type) 表示传递$type进去
+
 这个匿名函数是必须自己写的，否则本类完全没有作用。
 
 #### formatFields 格式设置
