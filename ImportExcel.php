@@ -213,6 +213,8 @@ class ImportExcel
                     $fieldName = $rowsSet[$col] ?? null;
                     if (empty($fieldName)) continue;
                     $value = $cell->getCalculatedValue() ?: $cell->getValue();
+                    // 空值统计
+                    if (empty($value)) $nullNumber ++;
 
 
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
@@ -226,7 +228,6 @@ class ImportExcel
 
                     $data[$fieldName] = (string) $value;
                     // 空值统计
-                    if (empty($value)) $nullNumber ++;
                 }
 
                 // 如果空值大于等于所有的列
@@ -245,7 +246,7 @@ class ImportExcel
                 if (!empty($this->transactionRollBack)) ($this->transactionRollBack)($e);
             }
 //            throw $e;
-            $msg = '操作失败，'. $this->transaction ? '本次操作全部取消' : '' .'，请修正后重新上传';
+            $msg = '操作失败，'. ($this->transaction ? '本次操作全部取消' : '') .'，请修正后重新上传';
             throw new \Exception('<h3>' . $msg . '</h3>
 <p>错误信息：'.$e->getMessage().'</p>
 <p>表格处理至第 '. static::$currentRow .' 行 ' . static::$currentCol . ' 列</p>');
