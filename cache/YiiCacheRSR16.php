@@ -72,7 +72,7 @@ class YiiCacheRSR16 implements \Psr\SimpleCache\CacheInterface
 
     public function deleteMultiple($keys)
     {
-        $list = self::getInstance()->multiSet($keys, $ttl);
+        $list = $this->getMultiple($keys);
         foreach ($list as $k => $v) {
             $this->delete($k);
         }
