@@ -227,7 +227,6 @@ class ImportExcel
                     if (isset($this->formatFields[$fieldName])) $value = $this->format($fieldName, $value);
 
                     $data[$fieldName] = (string) $value;
-                    // 空值统计
                 }
 
                 // 如果空值大于等于所有的列
