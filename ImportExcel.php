@@ -66,6 +66,7 @@ class ImportExcel
 
     private $checkUniqueText = [];
     private $transaction = false;
+    public static $defaultDate = '1000-01-01';
 
 
     /**
@@ -264,7 +265,7 @@ class ImportExcel
             // 格式处理
         switch ($format) {
             case 'date':
-                $value = $value ? date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value)) : '1000-01-01';
+                $value = $value ? date('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value)) : static::$defaultDate;
                 break;
             case 'date:int':
                 $value = $value ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($value) : 0;

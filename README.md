@@ -88,6 +88,10 @@ ImportExcel::init($file, $rowsSet, $start)
 这个匿名函数是必须自己写的，否则本类完全没有作用。
 
 #### formatFields 格式设置
-date类型 说明：转换为Y-m-d，如果为空时将转换为 '1000-01-01'
+date类型 说明：转换为Y-m-d，如果为空时将转换为 \xing\yiiImportExcel\ImportExcel::$defaultDate
 
 date:int类型 说明：转换为时间戳，如果为空则转换为 0
+
+
+### 其他说明
+\xing\yiiImportExcel\ImportExcel::$defaultDate  默认日期
