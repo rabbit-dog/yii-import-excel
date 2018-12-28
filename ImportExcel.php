@@ -262,7 +262,7 @@ class ImportExcel
                 if (!empty($this->transactionRollBack)) ($this->transactionRollBack)($e);
             }
 //            throw $e;
-            $msg = '操作失败，'. ($this->transaction ? '本次操作全部取消' : '') .'，请修正后重新上传';
+            $msg = '操作失败，'. ($this->transaction ? '本次操作全部取消，' : '') .'请修正后重新上传';
             throw new \Exception('<h3>' . $msg . '</h3>
 <p>错误信息：'.$e->getMessage().'</p>
 <p>表格处理至第 '. static::$currentRow .' 行 ' . static::$currentCol . ' 列</p>');
