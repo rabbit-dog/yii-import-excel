@@ -38,7 +38,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
  * @property array $valueMap 选项值配置
  * @property array $valueMapDefault 选项值不存在时的默认值
  * @property array $formatFields 格式设置，如日期需要设置，否则读取到值 会有问题
- * @property function $transactionRollBack 是否开启事务回滚
+ * @property callable $transactionRollBack 事务回滚匿名函数
+ * @property callable $checkFunction 事务回滚匿名函数
  * @property array $uniqueFields 唯一字段，需要检查表格中是否存在重复
  * @property bool $transaction 是否开启事务
  * @package xing\helper\yii\xml
@@ -121,6 +122,12 @@ class ImportExcel
         return $this;
     }
 
+    public function setCheck($function)
+    {
+        $this->checkFunction = $function;
+        return $this;
+    }
+
     /**
      * 执行导入
      * @param callable $saveFunction 保存程序
@@ -168,6 +175,7 @@ class ImportExcel
 
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE);
+                $data = [];
                 // 检查当前一行
                 foreach ($cellIterator as $col => $cell) {
 
@@ -190,7 +198,12 @@ class ImportExcel
                         }
                         $this->checkUniqueText[$fieldName] .= $value . '|';
                     }
+                    if (!empty($this->checkFunction)) {
+                        if (isset($this->formatFields[$fieldName])) $value = $this->format($fieldName, $value);
+                        $data[$fieldName] = (string) trim($value);
+                    }
                 }
+                if (!empty($this->checkFunction)) ($this->checkFunction)($data);
             }
 
             // 删除变量，释放内存
@@ -210,12 +223,17 @@ class ImportExcel
                 $data = [];
                 $nullNumber = 0;
                 foreach ($cellIterator as $col => $cell) {
+
+                    // 空值统计
+                    if (empty($value)) $nullNumber ++;
+                }
+                // 如果空值大于等于所有的列
+                if ($nullNumber < count($this->rowsSet)) foreach ($cellIterator as $col => $cell) {
+
                     static::$currentCol = $cell->getColumn();
                     $fieldName = $rowsSet[$col] ?? null;
                     if (empty($fieldName)) continue;
                     $value = $cell->getCalculatedValue() ?: $cell->getValue();
-                    // 空值统计
-                    if (empty($value)) $nullNumber ++;
 
 
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
@@ -227,11 +245,9 @@ class ImportExcel
                     // 格式处理
                     if (isset($this->formatFields[$fieldName])) $value = $this->format($fieldName, $value);
 
-                    $data[$fieldName] = (string) $value;
+                    $data[$fieldName] = (string) trim($value);
                 }
 
-                // 如果空值大于等于所有的列
-                if ($nullNumber >= count($this->rowsSet)) continue;
 
                 // 执行保存程序
                 $saveFunction($data);

@@ -67,6 +67,10 @@ ImportExcel::init($file, $rowsSet, $start)
     ->setUnique(['name', 'type']) // 要检查重复的字段数组
     
     ->formatFields(['birthday' => 'date']) // 格式设置，比如日期就需要设置，否则读取到值会有问题
+    // 设置额外检查方法，此方法在处理、保存数据前检查全部表格。
+    ->setCheck(function ($data) {
+        // 检查代码
+    })
     
     ->setTransaction(true) // 开启事务，默认不开启，注意如果导入数据量大时开启事务可能会造锁死
     // 以下是事务回滚设置（YII）
