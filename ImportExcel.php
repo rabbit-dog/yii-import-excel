@@ -191,7 +191,7 @@ class ImportExcel
                         throw new \Exception("第{$k}行{$col}列格式错误，值不能为空。", 10000);
                     }
                     // 重复检查
-                    if (!empty($this->uniqueFields) && in_array($fieldName, $this->uniqueFields)) {
+                    if (!empty($value) && in_array($fieldName, $this->uniqueFields)) {
                         if (!isset($this->checkUniqueText[$fieldName])) $this->checkUniqueText[$fieldName] = '|';
                         if (stripos($this->checkUniqueText[$fieldName], '|' . $value . '|') !== false) {
                             throw new \Exception("第{$k}行{$col}的值重复");
@@ -199,8 +199,10 @@ class ImportExcel
                         $this->checkUniqueText[$fieldName] .= $value . '|';
                     }
                     if (!empty($this->checkFunction)) {
-                        if (isset($this->formatFields[$fieldName])) $value = $this->format($fieldName, $value);
-                        $data[$fieldName] = (string) trim($value);
+                        if (isset($this->formatFields[$fieldName])) {
+                            $value = $this->format($fieldName, $value);
+                        }
+                        $data[$fieldName] = trim((string) $value);
                     }
                 }
                 if (!empty($this->checkFunction)) ($this->checkFunction)($data);
@@ -219,15 +221,18 @@ class ImportExcel
                 $cellIterator = $row->getCellIterator();
                 $cellIterator->setIterateOnlyExistingCells(FALSE);
 
-                // 循环赋值表格一行的数据
                 $data = [];
                 $nullNumber = 0;
+
+                // 空行检查
                 foreach ($cellIterator as $col => $cell) {
 
+                    $value = $cell->getCalculatedValue() ?: $cell->getValue();
                     // 空值统计
                     if (empty($value)) $nullNumber ++;
                 }
-                // 如果空值大于等于所有的列
+
+                // 循环赋值表格一行的数据
                 if ($nullNumber < count($this->rowsSet)) foreach ($cellIterator as $col => $cell) {
 
                     static::$currentCol = $cell->getColumn();
@@ -245,7 +250,7 @@ class ImportExcel
                     // 格式处理
                     if (isset($this->formatFields[$fieldName])) $value = $this->format($fieldName, $value);
 
-                    $data[$fieldName] = (string) trim($value);
+                    $data[$fieldName] = trim((string) $value);
                 }
 
 
