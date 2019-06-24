@@ -187,11 +187,11 @@ class ImportExcel
 
                     // 如果是选项
                     // 如果值为空，并且没有默认值的设置
-                    if (empty($value) && !isset($valueMapDefault[$fieldName])) {
+                    if (is_null($value) && !isset($valueMapDefault[$fieldName])) {
                         throw new \Exception("第{$k}行{$col}列格式错误，值不能为空。", 10000);
                     }
                     // 重复检查
-                    if (!empty($value) && in_array($fieldName, $this->uniqueFields)) {
+                    if (!is_null($value) && in_array($fieldName, $this->uniqueFields)) {
                         if (!isset($this->checkUniqueText[$fieldName])) $this->checkUniqueText[$fieldName] = '|';
                         if (stripos($this->checkUniqueText[$fieldName], '|' . $value . '|') !== false) {
                             throw new \Exception("第{$k}行{$col}的值重复");
@@ -229,7 +229,7 @@ class ImportExcel
 
                     $value = $cell->getCalculatedValue() ?: $cell->getValue();
                     // 空值统计
-                    if (empty($value)) $nullNumber ++;
+                    if (is_null($value)) $nullNumber ++;
                 }
 
                 // 循环赋值表格一行的数据
@@ -242,9 +242,9 @@ class ImportExcel
 
 
                     // 如果值为空，并且有默认值的设置，则设置为默认值，否则如果值存在，则值换为键名
-                    if (empty($value) && isset($valueMapDefault[$fieldName])) {
+                    if (is_null($value) && isset($valueMapDefault[$fieldName])) {
                         $value = $valueMapDefault[$fieldName];
-                    } else if (!empty($value) && isset($valueMap[$fieldName]) && is_array($valueMap[$fieldName])) {
+                    } else if ((!is_null($value)) && isset($valueMap[$fieldName]) && is_array($valueMap[$fieldName])) {
                         $value = array_keys($valueMap[$fieldName], $value)[0] ?? '';
                     }
                     // 格式处理
