@@ -67,7 +67,7 @@ class YiiCacheRSR16 implements \Psr\SimpleCache\CacheInterface
 
     public function setMultiple($values, $ttl = null)
     {
-        return self::getInstance()->multiSet($keys, $ttl);
+        return self::getInstance()->multiSet($values, $ttl);
     }
 
     public function deleteMultiple($keys)

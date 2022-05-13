@@ -11,8 +11,9 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",
-        "phpoffice/phpspreadsheet": "~1.5.0"
+        "php": ">=7.2.0",
+        "xing.chen/helper": "^1.1",
+        "phpoffice/phpspreadsheet": "1.19.0"
     },
     "autoload": {
         "psr-4": {

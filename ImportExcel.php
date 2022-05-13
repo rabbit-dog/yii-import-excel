@@ -24,8 +24,7 @@ if (!$m->save()) throw new ModelException($m);
 
 namespace xing\yiiImportExcel;
 
-use xing\helper\yii\YiiCacheRSR16;
-use xing\yiiImportExcel\cache\CacheFacetory;
+use xing\yiiImportExcel\cache\CacheFactory;
 use Yii;
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -130,27 +129,29 @@ class ImportExcel
 
     /**
      * 执行导入
-     * @param callable $saveFunction 保存程序
-     * @throws \PHPExcel_Reader_Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @param callable $saveFunction 回调:保存处理程序
+     * @return int
+     * @throws \Exception
      */
     public function run(callable $saveFunction)
     {
 
         set_time_limit(0);
-        $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
+
+        /*$objReader = \PHPExcel_IOFactory::createReader('Excel2007');
         if(!$objReader->canRead($this->file)){
             $reader = new Xls();
         } else {
             $reader = new Xlsx();
-        }
+        }*/
 
-        // 设置缓存
-        $cache = CacheFacetory::getInstance('FileCache');
+        // 设置缓存,以处理大型表格
+        $cache = CacheFactory::getInstance('FileCache');
         \PhpOffice\PhpSpreadsheet\Settings::setCache($cache);
 
-        $reader->setReadDataOnly(true);
-        $spreadsheet = $reader->load($this->file);
+//        $reader->setReadDataOnly(true);
+//        $spreadsheet = $reader->load($this->file);
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($this->file);
 
         $worksheet = $spreadsheet->getActiveSheet();
 

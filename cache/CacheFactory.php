@@ -9,7 +9,7 @@
 namespace xing\yiiImportExcel\cache;
 
 
-class CacheFacetory
+class CacheFactory
 {
 
 
