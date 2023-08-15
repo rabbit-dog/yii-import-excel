@@ -19,7 +19,7 @@ yii导入excel表格的扩展程序，可处理大型表格，程序对常用导
 
 ### 安装
 ```php
-composer require xing.chen/yii-import-excel dev-master
+composer require 
 ```
 
 ### 使用示例和说明
